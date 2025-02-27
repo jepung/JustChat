@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { supabase } from "../lib/supabase";
 
 interface IAuthProps {
   type: "login" | "register";
@@ -29,11 +30,18 @@ const Auth = ({ type }: IAuthProps) => {
     return router.back();
   };
 
-  const authHandler = () => {
-    if (type === "login") {
-      return Alert.alert("Auth", `${email} - ${password}`);
-    }
-    return Alert.alert("Auth", `${email} - ${password}`);
+  const loginHandler = async () => {
+    const { data } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+  };
+
+  const registerHandler = async () => {
+    const { data } = await supabase.auth.signUp({
+      email,
+      password,
+    });
   };
 
   useEffect(() => {
@@ -79,7 +87,7 @@ const Auth = ({ type }: IAuthProps) => {
           />
         </View>
         <Pressable
-          onPress={authHandler}
+          onPress={type === "login" ? loginHandler : registerHandler}
           disabled={isButtonDisabled}
           style={{
             backgroundColor: isButtonDisabled ? "lightgray" : COLORS.red,
