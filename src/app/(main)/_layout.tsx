@@ -1,16 +1,20 @@
 import { Redirect, router, Stack } from "expo-router";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import React from "react";
 import { ProfileService } from "../../services/profile.service";
 import sessionAtom from "../../store/authStore";
+import profileAtom from "../../store/profileStore";
 
 const MainLayout = () => {
   const session = useAtomValue(sessionAtom);
+  const setProfile = useSetAtom(profileAtom);
 
   const checkUserProfile = async () => {
     const { data } = await ProfileService.getProfile(session!);
     if (!data) {
       return router.replace("/complete-profile");
+    } else {
+      setProfile(data);
     }
   };
 
