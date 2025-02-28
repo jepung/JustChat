@@ -20,6 +20,7 @@ import { useAtomValue } from "jotai";
 import { sessionAtom } from "../../store/authStore";
 import { router } from "expo-router";
 import { REGEX } from "../../constants/regex";
+import { ProfileService } from "../../services/profile.service";
 
 const PLACEHOLDER_AVATAR_URI = "https://avatar.iran.liara.run/public/boy";
 const CompleteProfileScreen = () => {
@@ -69,24 +70,16 @@ const CompleteProfileScreen = () => {
     } | null;
     error: Error | null;
   }> => {
-    const imageBuffer = await fetch(avatar?.uri ?? PLACEHOLDER_AVATAR_URI).then(
-      (data) => data.arrayBuffer()
+    const { data, error } = await ProfileService.uploadAvatar(
+      avatar,
+      PLACEHOLDER_AVATAR_URI
     );
-    const imageExt = avatar?.uri.split(".").pop()?.toLowerCase() ?? "jpeg";
-
-    const { data, error } = await supabase.storage
-      .from("avatars")
-      .upload(`${Date.now()}.${imageExt}`, imageBuffer, {
-        contentType: avatar?.mimeType ?? "image/jpeg",
-      });
-
     if (error) {
       return {
         data: null,
         error,
       };
     }
-
     return {
       data,
       error: null,
@@ -102,18 +95,15 @@ const CompleteProfileScreen = () => {
         return Alert.alert("Failed", uploadImageError.message);
       }
 
-      const userData = {
-        id: session?.user.id,
-        username,
-        full_name: fullName,
-        avatar_url: avatar?.path,
-        email: session?.user.email,
-        updated_at: new Date(),
-      };
-
-      const { error: uploadProfileError } = await supabase
-        .from("profiles")
-        .upsert(userData);
+      const { error: uploadProfileError } =
+        await ProfileService.completeProfile({
+          id: session?.user.id!,
+          username,
+          full_name: fullName,
+          avatar_url: avatar?.path!,
+          email: session?.user.email!,
+          updated_at: new Date(),
+        });
 
       if (uploadProfileError) {
         return Alert.alert("Failed", uploadProfileError.message);

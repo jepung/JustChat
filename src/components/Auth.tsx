@@ -15,6 +15,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { supabase } from "../lib/supabase";
 import * as EmailValidator from "email-validator";
+import { AuthService } from "../services/auth.service";
 
 interface IAuthProps {
   type: "login" | "register";
@@ -53,10 +54,7 @@ const Auth = ({ type }: IAuthProps) => {
 
   const loginHandler = async () => {
     setIsButtonLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await AuthService.login(email, password);
     setIsButtonLoading(false);
 
     if (error) {
@@ -66,10 +64,7 @@ const Auth = ({ type }: IAuthProps) => {
 
   const registerHandler = async () => {
     setIsButtonLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { error } = await AuthService.register(email, password);
     setIsButtonLoading(false);
 
     if (error) {
