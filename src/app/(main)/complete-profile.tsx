@@ -1,26 +1,25 @@
+import { Octicons } from "@expo/vector-icons";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+import { useAtomValue } from "jotai";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
+  ActivityIndicator,
+  Alert,
   Image,
   Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
   TouchableOpacity,
-  Alert,
-  ActivityIndicator,
+  View,
 } from "react-native";
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../../constants/colors";
-import { TextInput } from "react-native";
-import { Octicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { supabase } from "../../lib/supabase";
-import { useAtomValue } from "jotai";
-import { sessionAtom } from "../../store/authStore";
-import { router } from "expo-router";
 import { REGEX } from "../../constants/regex";
 import { ProfileService } from "../../services/profile.service";
+import sessionAtom from "../../store/authStore";
 
 const PLACEHOLDER_AVATAR_URI = "https://avatar.iran.liara.run/public/boy";
 const CompleteProfileScreen = () => {

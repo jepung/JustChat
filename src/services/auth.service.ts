@@ -14,4 +14,8 @@ export class AuthService {
       password,
     });
   }
+
+  static async logout() {
+    return supabase.auth.signOut();
+  }
 }

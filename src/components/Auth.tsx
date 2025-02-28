@@ -1,21 +1,20 @@
+import { AntDesign } from "@expo/vector-icons";
+import * as EmailValidator from "email-validator";
+import { router } from "expo-router";
+import React, { useMemo, useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
   Alert,
   AppState,
-  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
-import { AntDesign } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { supabase } from "../lib/supabase";
-import * as EmailValidator from "email-validator";
 import { AuthService } from "../services/auth.service";
+import Button from "./Button";
 
 interface IAuthProps {
   type: "login" | "register";
@@ -112,26 +111,14 @@ const Auth = ({ type }: IAuthProps) => {
             onPress={() => setIsSecure(!isSecure)}
           />
         </View>
-        <Pressable
-          onPress={type === "login" ? loginHandler : registerHandler}
+        <Button
+          text={type === "login" ? "Sign In" : "Sign Up"}
           disabled={isButtonDisabled || isButtonLoading}
-          style={{
-            backgroundColor: isButtonDisabled ? "lightgray" : COLORS.red,
-            padding: 12,
-            borderRadius: 20,
-            marginTop: 10,
-          }}
-        >
-          {isButtonLoading ? (
-            <View>
-              <ActivityIndicator size={18} color={"white"} />
-            </View>
-          ) : (
-            <Text style={{ textAlign: "center", color: "white" }}>
-              Sign {type === "login" ? "In" : "Up"}
-            </Text>
-          )}
-        </Pressable>
+          isLoading={isButtonLoading}
+          onPress={() =>
+            type === "login" ? loginHandler() : registerHandler()
+          }
+        />
       </View>
       <View style={{ marginTop: 12, flex: 1 }}>
         <Text style={{ textAlign: "center", color: "gray", fontSize: 12 }}>

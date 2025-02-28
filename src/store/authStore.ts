@@ -3,4 +3,4 @@ import { atom } from "jotai";
 
 const sessionAtom = atom<Session | null>(null);
 
-export { sessionAtom };
+export default sessionAtom;

@@ -1,8 +1,7 @@
-import React from "react";
-import { Redirect, Slot, Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { useAtomValue } from "jotai";
-import { sessionAtom } from "../../store/authStore";
-import { supabase } from "../../lib/supabase";
+import React from "react";
+import sessionAtom from "../../store/authStore";
 
 const AuthLayout = () => {
   const session = useAtomValue(sessionAtom);

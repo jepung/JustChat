@@ -1,39 +1,36 @@
-import { View, Text } from "react-native";
-import React, { useEffect } from "react";
-import { Redirect, router, Slot, Stack } from "expo-router";
+import { Redirect, router, Stack } from "expo-router";
 import { useAtomValue } from "jotai";
-import { sessionAtom } from "../../store/authStore";
-import { supabase } from "../../lib/supabase";
+import React from "react";
+import { ProfileService } from "../../services/profile.service";
+import sessionAtom from "../../store/authStore";
 
 const MainLayout = () => {
   const session = useAtomValue(sessionAtom);
 
-  if (!session) {
-    return <Redirect href={"login"} />;
-  }
-
   const checkUserProfile = async () => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("id", session.user.id)
-      .single();
-
+    const { data } = await ProfileService.getProfile(session!);
     if (!data) {
       return router.replace("/complete-profile");
     }
   };
 
-  useEffect(() => {
-    if (session) {
-      checkUserProfile();
-    }
-  }, [session]);
+  if (!session) {
+    return <Redirect href={"login"} />;
+  } else {
+    checkUserProfile();
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
       <Stack.Screen name="complete-profile" />
+      <Stack.Screen
+        name="settings"
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerTitle: "Settings",
+        }}
+      />
     </Stack>
   );
 };

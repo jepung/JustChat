@@ -1,6 +1,15 @@
+import { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
 
 export class ProfileService {
+  static async getProfile(session: Session) {
+    return supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", session!.user.id)
+      .single();
+  }
+
   static async uploadAvatar(avatar: any, placeHolderUri: string) {
     const imageBuffer = await fetch(avatar?.uri ?? placeHolderUri).then(
       (data) => data.arrayBuffer()
