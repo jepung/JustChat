@@ -5,25 +5,46 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  AppState,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { AntDesign } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { supabase } from "../lib/supabase";
+import * as EmailValidator from "email-validator";
 
 interface IAuthProps {
   type: "login" | "register";
 }
 
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
+
 const Auth = ({ type }: IAuthProps) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isSecure, setIsSecure] = useState<boolean>(true);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+  const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false);
+  const isButtonDisabled = useMemo(() => {
+    return password.length < 6 || !EmailValidator.validate(email);
+  }, [email, password]);
+
+  const resetState = () => {
+    setEmail("");
+    setPassword("");
+    setIsSecure(true);
+  };
 
   const switchPageHandler = () => {
+    resetState();
     if (type === "login") {
       return router.push("/register");
     }
@@ -31,22 +52,32 @@ const Auth = ({ type }: IAuthProps) => {
   };
 
   const loginHandler = async () => {
-    const { data } = await supabase.auth.signInWithPassword({
+    setIsButtonLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    setIsButtonLoading(false);
+
+    if (error) {
+      return Alert.alert("Failed", error.message);
+    }
   };
 
   const registerHandler = async () => {
-    const { data } = await supabase.auth.signUp({
+    setIsButtonLoading(true);
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
-  };
+    setIsButtonLoading(false);
 
-  useEffect(() => {
-    setIsButtonDisabled(!email || !password);
-  }, [email, password]);
+    if (error) {
+      return Alert.alert("Failed", error.message);
+    }
+
+    return Alert.alert("Success", "Check your email");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,7 +119,7 @@ const Auth = ({ type }: IAuthProps) => {
         </View>
         <Pressable
           onPress={type === "login" ? loginHandler : registerHandler}
-          disabled={isButtonDisabled}
+          disabled={isButtonDisabled || isButtonLoading}
           style={{
             backgroundColor: isButtonDisabled ? "lightgray" : COLORS.red,
             padding: 12,
@@ -96,9 +127,15 @@ const Auth = ({ type }: IAuthProps) => {
             marginTop: 10,
           }}
         >
-          <Text style={{ textAlign: "center", color: "white" }}>
-            Sign {type === "login" ? "In" : "Up"}
-          </Text>
+          {isButtonLoading ? (
+            <View>
+              <ActivityIndicator size={18} color={"white"} />
+            </View>
+          ) : (
+            <Text style={{ textAlign: "center", color: "white" }}>
+              Sign {type === "login" ? "In" : "Up"}
+            </Text>
+          )}
         </Pressable>
       </View>
       <View style={{ marginTop: 12, flex: 1 }}>

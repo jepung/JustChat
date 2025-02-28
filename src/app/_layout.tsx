@@ -1,13 +1,18 @@
 import React from "react";
 import { Stack } from "expo-router";
+import AuthProvider from "../providers/AuthProvider";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-export const isAuth = false;
 const AppLayout = () => {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(main)" />
-    </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(main)" />
+        </Stack>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 };
 
