@@ -1,4 +1,3 @@
-import React from "react";
 import { Stack } from "expo-router";
 import AuthProvider from "../providers/AuthProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

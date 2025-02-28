@@ -1,10 +1,11 @@
-import { View, Text } from "react-native";
-import React from "react";
 import { useAtomValue } from "jotai";
+import React from "react";
+import { Text, View } from "react-native";
 import profileAtom from "../../../store/profileStore";
 
 const HomeScreen = () => {
   const profile = useAtomValue(profileAtom);
+
   return (
     <View>
       <Text>
