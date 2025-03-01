@@ -34,7 +34,10 @@ const Auth = ({ type }: IAuthProps) => {
   const [isSecure, setIsSecure] = useState<boolean>(true);
   const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false);
   const isButtonDisabled = useMemo(() => {
-    return password.length < 6 || !EmailValidator.validate(email);
+    return (
+      (type == "register" && password.length < 6) ||
+      !EmailValidator.validate(email)
+    );
   }, [email, password]);
 
   const resetState = () => {
