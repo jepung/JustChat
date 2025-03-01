@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-interface IProfile {
+export interface IProfile {
   id: string;
   full_name: string;
   email: string;

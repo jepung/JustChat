@@ -1,13 +1,17 @@
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { IProfile } from "../store/profileStore";
 
 export class ProfileService {
   static async getProfile(session: Session) {
-    return supabase
+    const { data } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", session!.user.id)
       .single();
+    return {
+      data: data as IProfile | null,
+    };
   }
 
   static async uploadAvatar(avatar: any, placeHolderUri: string) {
